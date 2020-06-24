@@ -6,7 +6,7 @@ import './main.html';
 import 'bootstrap/dist/css/bootstrap.css';
 import "bootstrap";
 window.Images = Images
-Meteor.subscribe("allowedData");
+Meteor.subscribe("images");
 
 //================================================================
 
@@ -25,10 +25,19 @@ Router.route('/',function(){
   this.render('landing',{to: "main"});
 });
 
-Router.route('/login',function(){
-  console.log("you hit /login ");
-  this.render('login',{to: "main"});
-  this.render('database', {to:"item1"});
+Router.route('/userDAta',function(){
+  console.log("you hit /userData ");
+  if(Meteor.user()){
+    if(Images.find().count() > 0){
+      this.render('userData',{to: "main"});
+    }
+    else{
+      this.render('noImage',{to: "main"});
+    }
+  }
+  else{
+    this.render('loginFirst',{to:"main"});
+  }
 });
 
 Router.route('/insert',function(){
@@ -45,16 +54,20 @@ AutoForm.addHooks(null, {
 
 //================================helpers==============================================
 
-Template.database.helpers({
+Template.userData.helpers({
   images(){
-    return Images.find();
+    return Images.find({},{sort:{createdAt:-1}});
   },
   
 });
 
 //==============================events==============================================
 
-Template.database.events({
+$(document).click(function() {
+  $('.navbar-collapse').collapse('hide');
+});
+
+Template.userData.events({
   'click .js-del-image':function(event){
       Images.remove({"_id":this._id}); 
  },
@@ -69,6 +82,3 @@ Template.insertImageForm.events({
   }
 });
 
-// Template.login.events({
-
-// });

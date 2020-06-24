@@ -6,6 +6,9 @@
 
   <template name="ApplicationLayout">
     {{> navbar}}
+    <div id="shift">
+      {{> loginButtons}}
+    </div>
     {{> yield "main"}}
     {{> yield "item1"}}
   </template>
@@ -15,10 +18,6 @@
     <div class="container">
       <h1>Welcome to Indian's Personal Online Gallery</h1>
       <p>Connecting India...</p>
-      <!-- <a href="/insert"><button class="btn btn-info">Insert image</button></a>
-      <br>
-      <a href="/login"><button class="btn btn-success right">login/sign in</button></a>
-      <br> -->
       <div class='row'>
 
         <div class='col-lg-3 col-md-4 col-sm-6'>
@@ -57,30 +56,21 @@
     </button>
   
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav">
-        &nbsp;
-        <a href="/"><button class="btn btn-info">Home</button></a>
-        &nbsp;
-        <a href="/insert"><button class="btn btn-info">Insert image</button></a>
-        &nbsp;
-      <a href="/login"><button class="btn btn-success right">login/sign in</button></a>
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="/insert">Insert <span class="sr-only">(current)</span></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/userData">Images</a>
+        </li>
       </ul>
-      
     </div>
   </nav>
 </template>
 
-<template name="login">
+<template name="userData">
   <div class="container">
-    <h1>login page</h1>
-    {{> loginButtons }}
-    <br> <br>
-  </div>
-</template>
-
-<template name="database">
-  <div class="container">
-      
+      <h2>Your uploaded images</h2><br>
       <div class="row">
         {{#each images}}
           <div class="col-lg-3 col-md-4 col-sm-6">
@@ -99,13 +89,25 @@
   </div>
 </template>
 
+<template name="loginFirst">
+  <div class="container">
+    <h2>Login to see your images</h2>
+  </div>
+</template>
+
+<template name="noImage">
+  <div class="container">
+    <h2>Uploaded some images</h2>
+    <a href="/insert"><button class='btn btn-info'>Insert</button></a>
+  </div>
+</template>
+
 <template name="insertImageForm">
   &nbsp;
   <div class="container">
     <h2>Form</h2>
     &nbsp;
     {{> quickForm collection="Images" id="insertImageForm" type="insert" validation="browser"}}
-    <a href="/login"><button class="btn btn-info">Your images</button></a>
+    <a href="/userData"><button class="btn btn-info">Images</button></a>
   </div>  
-  
 </template>

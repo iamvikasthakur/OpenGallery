@@ -20,6 +20,7 @@ img {
   background-color: grey !important;
 }
 
-.right{
-  text-align: right;
+#shift{
+  padding-left: 50px;
 }
+

@@ -9,6 +9,6 @@ Meteor.startup(function(){
   }
 });
 
-Meteor.publish("allowedData",function(){
-    return Images.find({"createdBy":this.userId},{sort:{createdAt:-1}});
+Meteor.publish("images",function(){
+    return Images.find({createdBy:this.userId});
 });
