@@ -1,0 +1,25 @@
+body {
+  padding-top: 56px;
+  background-image: url('landing_image3.jpg');
+  background-repeat: no-repeat;
+  background-attachment: fixed; 
+  background-size: 100% 100%;
+  color: white !important;
+}
+
+.container {
+  text-align: center;
+}
+
+img {
+  max-width: 100%;
+}
+
+.thumbnail {
+  margin-bottom: 10px;
+  background-color: grey !important;
+}
+
+.right{
+  text-align: right;
+}
