@@ -24,5 +24,7 @@ iron:router
 accounts-ui
 accounts-password
 msavin:mongol
-aldeed:autoform
-aldeed:collection2-core
+accounts-base
+ostrio:files
+session
+natestrauser:font-awesome

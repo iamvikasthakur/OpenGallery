@@ -5,8 +5,12 @@ import { Images } from "/lib/Images.js"
 import './main.html';
 import 'bootstrap/dist/css/bootstrap.css';
 import "bootstrap";
+import { ReactiveVar } from 'meteor/reactive-var';
 window.Images = Images
-Meteor.subscribe("images");
+Template.uploadForm.onCreated(function () {
+  this.currentUpload = new ReactiveVar(false);
+});
+var  event , template, c = 1;
 
 //================================================================
 
@@ -21,18 +25,18 @@ Accounts.ui.config({
 //========================routes===================================
 
 Router.route('/',function(){
-  console.log("you hit / ");
   this.render('landing',{to: "main"});
+  c = 0;
 });
 
-Router.route('/userDAta',function(){
-  console.log("you hit /userData ");
+Router.route('/file',function(){
+  c = 0;
   if(Meteor.user()){
     if(Images.find().count() > 0){
-      this.render('userData',{to: "main"});
+      this.render('file',{to:"main"});
     }
     else{
-      this.render('noImage',{to: "main"});
+      this.render("noImage",{to:"main"});
     }
   }
   else{
@@ -40,25 +44,24 @@ Router.route('/userDAta',function(){
   }
 });
 
-Router.route('/insert',function(){
-  console.log("you hit /insert");
-  this.render('insertImageForm',{to: "main"});
+Router.route('/upload',function(){
+  this.render('uploadForm',{to: "main"});
   
 });
 
-AutoForm.addHooks(null, {
-  onSuccess: function() {
-    alert('Submit Successfully');
-  },  
-});
 
 //================================helpers==============================================
 
-Template.userData.helpers({
-  images(){
-    return Images.find({},{sort:{createdAt:-1}});
+Template.uploadForm.helpers({
+  currentUpload() {
+    return Template.instance().currentUpload.get();
+  }
+});
+
+Template.file.helpers({
+  imageFile() {
+    return Images.find();
   },
-  
 });
 
 //==============================events==============================================
@@ -67,18 +70,72 @@ $(document).click(function() {
   $('.navbar-collapse').collapse('hide');
 });
 
-Template.userData.events({
-  'click .js-del-image':function(event){
-      Images.remove({"_id":this._id}); 
- },
+Template.file.events({
+  'click .js-del-image': function(){
+    Images.remove({"_id": this._id});
+  },
+  'click .openModal': function(){
+    var size = this.size/1024;
+    if(size > 1024){
+      size = Math.round(size/1024)+" MB";
+    }
+    else{ 
+      size = Math.round(size)+" KB";
+    }
+
+    $('.modalContent').attr({"src":"/cdn/storage/Images/"+this._id+"/original/"+this._id+this.extensionWithDot});
+    $('#caption').html("<strong>Size :</strong> "+size+"<br><strong>Name :</strong> "+this.name+"<br><strong>Date :</strong> "+this.meta.createdAt);
+    $('#myModal').css({"display":"block"});
+  },
+  'click .close': function(){
+    $('#myModal').css({"display":"none"});
+  }
 });
 
 
-Template.insertImageForm.events({
-  'submit #insertImageForm': function(event){
-    if(!Meteor.user()){
-      alert("login in first");
+Template.uploadForm.events({
+  'change #fileInput': function(e, t){
+      event = e;
+      template = t;
+      c = 1;
+  },
+  'click #Input':function(){
+      if(!Meteor.user()){
+        alert("Login First :)");
+      }
+      else{
+        if(!event || c == 0){
+          alert("Choose image first :)");
+        }
+        else if (event.currentTarget.files && Meteor.user()) {
+          c = 0;
+          for(var i = 0; i < event.currentTarget.files.length; i++) {
+              const upload = Images.insert({
+                file: event.currentTarget.files[i],
+                streams: 'dynamic',
+                chunkSize: 'dynamic',
+                meta: {
+                  createdAt: new Date(),
+                }
+              },false);
+    
+              upload.on('start', function () {
+                template.currentUpload.set(this);
+              });
+        
+              upload.on('end', function (error, fileObj) {
+                if (error) {
+                  alert('Error during upload: ' + error);
+                } else {
+                  alert('File "' + fileObj.name + '" successfully uploaded');
+                }
+                template.currentUpload.set(false);
+              });
+              upload.start();
+            }
+          }
+          event = 0;
+        }
     }
-  }
 });
 

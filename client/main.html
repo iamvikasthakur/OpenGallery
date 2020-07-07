@@ -3,12 +3,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 
-
   <template name="ApplicationLayout">
     {{> navbar}}
     <div id="shift">
       {{> loginButtons}}
     </div>
+
     {{> yield "main"}}
     {{> yield "item1"}}
   </template>
@@ -17,7 +17,8 @@
 <template name="landing">
     <div class="container">
       <h1>Welcome to Indian's Personal Online Gallery</h1>
-      <p>Connecting India...</p>
+      <h3>You can <a href="/upload"><button class='btn btn-info'>Upload</button></a> here </h3><br>
+      <h3>Your <a href="/file"><button type="submit" class="btn btn-info">Images</button></a> are here</h3><br>
       <div class='row'>
 
         <div class='col-lg-3 col-md-4 col-sm-6'>
@@ -50,7 +51,7 @@
 
 <template name="navbar">
   <nav class="navbar navbar-expand-lg fixed-top navbar-dark bg-dark">
-    <a class="navbar-brand" href="/">OpenGallery</a>
+    <a class="navbar-brand" href="/"><i class="fa fa-camera"></i> OpenGallery</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -58,56 +59,67 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mr-auto">
         <li class="nav-item">
-          <a class="nav-link" href="/insert">Insert <span class="sr-only">(current)</span></a>
+          <a class="nav-link" href="/upload">Upload <span class="sr-only">(current)</span></a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="/userData">Images</a>
+          <a class="nav-link" href="/file">Images</a>
         </li>
       </ul>
     </div>
   </nav>
 </template>
 
-<template name="userData">
-  <div class="container">
-      <h2>Your uploaded images</h2><br>
-      <div class="row">
-        {{#each images}}
-          <div class="col-lg-3 col-md-4 col-sm-6">
-            <div class="thumbnail">
-              <img src="{{imgUrl}}"/>
-              <div class="caption">
-                {{createdAt}}
-                &nbsp;
-                <button class="js-del-image btn btn-warning">delete</button>
-              </div>
-            </div>
-          </div>
-        {{/each}}
-      </div>
-    
-  </div>
-</template>
-
 <template name="loginFirst">
   <div class="container">
-    <h2>Login to see your images</h2>
+    <h2>You have't login yet ?</h2>
+    <h3>Please login to upload and see your images </h3>
   </div>
 </template>
 
 <template name="noImage">
   <div class="container">
-    <h2>Uploaded some images</h2>
-    <a href="/insert"><button class='btn btn-info'>Insert</button></a>
+    <h2>You haven't uploaded yet <br> Upload some images</h2>
+    <a href="/upload"><button class='btn btn-info'>Upload</button></a>
   </div>
 </template>
 
-<template name="insertImageForm">
-  &nbsp;
+<template name="uploadForm">
   <div class="container">
-    <h2>Form</h2>
-    &nbsp;
-    {{> quickForm collection="Images" id="insertImageForm" type="insert" validation="browser"}}
-    <a href="/userData"><button class="btn btn-info">Images</button></a>
-  </div>  
+    {{#with currentUpload}}
+    Uploading <b>{{file.name}}</b>:
+    <span id="progress">{{progress.get}}%</span>
+  {{else}}
+    <br>
+    <input id="fileInput" type="file" name="fileInput" multiple/>
+    <button type="submit" class="btn btn-success" id="Input">Submit</button>
+    {{/with}}
+    <br><br><br>
+    <h3>Wants to see your <a href="/file"><button type="submit" class="btn btn-info">Images</button></a></h3>
+  </div>
 </template>
+
+<template name='file'>
+   <div class="container">
+    <h2>Your uploaded images</h2><br>
+    <h3>Wants to <a href="/upload"><button type="submit" class="btn btn-info">Upload</button></a> more </h3><br>
+    <div class="row">
+      {{#each imageFile}}
+        <div class="col-lg-3 col-md-4 col-sm-6">
+          <div class="thumbnail">
+            <img src="/cdn/storage/Images/{{_id}}/original/{{_id}}{{extensionWithDot}}" alt="{{this.name}}" class="openModal myImg">
+            <div class="caption">
+              <button type="button" class="js-del-image btn btn-warning">delete</button>
+            </div>
+          </div>
+        </div>
+      {{/each}}
+    </div>
+    <div id="myModal" class="modal">
+      <span class="close fa fa-times"></span>
+      <img class="modalContent">
+      <div id="caption"></div>
+    </div>
+  </div>
+</template>
+
+
